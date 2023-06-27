@@ -25,7 +25,7 @@ const Footer = () => {
     <footer className="flexStart footer">
       <div className="flex flex-col gap-12 w-full">
         <div className="flex items-start flex-col">
-          <Image src="/" width={115} height={38} alt="Flexibble" />
+          {/* <Image src="aa.png" width={115} height={38} alt="Flexibble" /> */}
 
           <p className="text-start text-sm font-normal mt-5 max-w-xs">
             Some text
