@@ -17,10 +17,12 @@ const AuthProviders = () => {
   console.log({ providers });
 
   useEffect(() => {
+    console.log("hini");
+
     const fetchProviders = async () => {
       const res = await getProviders();
       console.log({ res });
-      setProviders(res);
+      // setProviders(res);
     };
     fetchProviders();
   }, []);

@@ -6,15 +6,44 @@ import { ChangeEvent, useState } from "react";
 import FormField from "./FormField";
 import { categoryFilters } from "@/constants";
 import CustomMenu from "./CustomMenu";
+import Button from "./Button";
+import { PlusOutlined } from "@ant-design/icons";
+import { createNewProject, fetchToken } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 type Props = {
   type: string;
   session: SessionInterface;
 };
 const ProjectForm = ({ type, session }: Props) => {
-  const handleFormSubmit = (e: React.FormEvent) => {};
+  const router = useRouter();
+  console.log({ router });
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setIsSubmitting(true);
+
+    const { token } = await fetchToken();
+    console.log({ token });
+
+    try {
+      if (type === "create") {
+        await createNewProject(form, session?.user?.id, token);
+        console.log("hini");
+
+        router.push("/");
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleChangeImage = (e: ChangeEvent<HTMLInputElement>) => {
+    console.log({ e });
+
     e.preventDefault();
     const file = e.target.files?.[0];
     console.log({ file });
@@ -26,7 +55,7 @@ const ProjectForm = ({ type, session }: Props) => {
     }
 
     const reader = new FileReader();
-
+    reader.readAsDataURL(file);
     console.log({ reader });
 
     reader.onloadend = () => {
@@ -50,7 +79,7 @@ const ProjectForm = ({ type, session }: Props) => {
     description: "",
     image: "",
     liveSiteUrl: "",
-    gitHubUrl: "",
+    githubUrl: "",
     category: "",
   });
   console.log({ form });
@@ -71,7 +100,7 @@ const ProjectForm = ({ type, session }: Props) => {
         />
         {form.image && (
           <Image
-            src={form?.image}
+            src={form.image}
             className="sm:p-10 object-contain z-20"
             alt="image"
             fill
@@ -101,15 +130,9 @@ const ProjectForm = ({ type, session }: Props) => {
       <FormField
         type="url"
         title="GitHup URL"
-        state={form.gitHubUrl}
+        state={form.githubUrl}
         placeholder="https//github.com"
-        setState={(value) => handleStateChange("gitHubUrl", value)}
-      />
-      <FormField
-        title="Title"
-        state={form.title}
-        placeholder="Flexibble"
-        setState={(value) => handleStateChange("title", value)}
+        setState={(value) => handleStateChange("githubUrl", value)}
       />
 
       <CustomMenu
@@ -118,8 +141,17 @@ const ProjectForm = ({ type, session }: Props) => {
         filters={categoryFilters}
         setState={(value) => handleStateChange("category", value)}
       />
-      <div className="flexStart">
-        <button>Create</button>
+      <div className="flexStart w-full">
+        <Button
+          title={
+            isSubmitting
+              ? `${type === "create" ? "Creating" : "Editing"}`
+              : `${type === "create" ? "Create" : "Edit"}`
+          }
+          type="submit"
+          leftIcon={isSubmitting ? "" : ""}
+          isSubmitting={isSubmitting}
+        ></Button>
       </div>
     </form>
   );
